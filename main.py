@@ -50,6 +50,8 @@ def index():
                                 <ul>
                                     <li><code>/verify @username</code> - Grant permissions to a verified user</li>
                                     <li><code>/reject @username</code> - Remove a user from the group</li>
+                                    <li><code>/unban @username</code> - Unban a user so they can rejoin the group</li>
+                                    <li><code>/unban_id [user_id]</code> - Unban a user by their ID number</li>
                                 </ul>
                             </div>
                             <div class="alert alert-info mt-4">
