@@ -1,11 +1,17 @@
-from flask import Flask
+from flask import Flask, render_template_string
 import os
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.INFO,
+                   format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
 # Flask app setup
 app = Flask(__name__)
 app.secret_key = os.environ.get("SESSION_SECRET", os.urandom(24).hex())
 
-# Bot configuration
+# Get telegram token from environment variables for security
 BOT_TOKEN = os.environ.get("TELEGRAM_TOKEN")
 ADMIN_ID = 7582664657  # Telegram ID of @UMFST_Admin
 
@@ -51,14 +57,6 @@ def index():
                                     <li><code>/verify @username</code> - Grant permissions to a verified user</li>
                                     <li><code>/reject @username</code> - Remove a user from the group</li>
                                 </ul>
-                            </div>
-                            <div class="alert alert-info mt-4">
-                                <strong>Note:</strong> When you want to start the bot, run the following steps:
-                                <ol>
-                                    <li>Install python-telegram-bot v22.1: <code>pip install "python-telegram-bot==22.1"</code></li>
-                                    <li>Copy main.py content from your original code</li>
-                                    <li>Run the bot using: <code>python main.py</code></li>
-                                </ol>
                             </div>
                         </div>
                     </div>
