@@ -131,7 +131,7 @@ def verify_command_handler(update: Update, context: CallbackContext):
         logger.error(f"Error verifying user {target_user_id} in chat {chat_id}: {e}")
         update.message.reply_text(f"Failed to verify user: {e}")
 
-async def reject_command_handler(update: Update, context: CallbackContext):
+def reject_command_handler(update: Update, context: CallbackContext):
     """
     Handle /reject command from admins.
     Remove a user from the group.
@@ -144,60 +144,60 @@ async def reject_command_handler(update: Update, context: CallbackContext):
     
     # Check if command sender is an admin
     try:
-        chat_member = await context.bot.get_chat_member(chat_id, user_id)
+        chat_member = context.bot.get_chat_member(chat_id, user_id)
         if not is_admin(chat_member):
-            await update.message.reply_text("Only admins can use this command.")
+            update.message.reply_text("Only admins can use this command.")
             return
     except TelegramError as e:
         logger.error(f"Error checking admin status for user {user_id}: {e}")
-        await update.message.reply_text("Failed to verify admin status. Please try again later.")
+        update.message.reply_text("Failed to verify admin status. Please try again later.")
         return
     
     # Get the user ID to reject
     if not context.args:
-        await update.message.reply_text("Please specify a user ID to reject.\nUsage: /reject USER_ID")
+        update.message.reply_text("Please specify a user ID to reject.\nUsage: /reject USER_ID")
         return
     
     try:
         target_user_id = int(context.args[0])
     except ValueError:
-        await update.message.reply_text("Invalid user ID. Please use a numeric ID.")
+        update.message.reply_text("Invalid user ID. Please use a numeric ID.")
         return
     
     # Check if user is pending verification
     user_data = verification_storage.get_pending_verification(chat_id, target_user_id)
     if not user_data:
-        await update.message.reply_text("This user is not pending verification or has already been verified.")
+        update.message.reply_text("This user is not pending verification or has already been verified.")
         return
     
     try:
         # Get user's name or ID for the message
         try:
-            target_member = await context.bot.get_chat_member(chat_id, target_user_id)
+            target_member = context.bot.get_chat_member(chat_id, target_user_id)
             user_name = get_user_name(target_member.user)
         except TelegramError:
             user_name = f"User {target_user_id}"
         
         # Ban the user
-        await context.bot.ban_chat_member(chat_id=chat_id, user_id=target_user_id)
+        context.bot.ban_chat_member(chat_id=chat_id, user_id=target_user_id)
         
         # Immediately unban to convert it to a "kick" (not a permanent ban)
-        await context.bot.unban_chat_member(chat_id=chat_id, user_id=target_user_id)
+        context.bot.unban_chat_member(chat_id=chat_id, user_id=target_user_id)
         
         # Remove from pending verification
         verification_storage.remove_pending_verification(chat_id, target_user_id)
         
         # Send rejection message
         admin_name = get_user_name(update.effective_user)
-        await update.message.reply_text(f"❌ {user_name} has been rejected and removed from the group by {admin_name}.")
+        update.message.reply_text(f"❌ {user_name} has been rejected and removed from the group by {admin_name}.")
         
         logger.info(f"User {target_user_id} rejected in chat {chat_id} by admin {user_id}")
         
     except TelegramError as e:
         logger.error(f"Error rejecting user {target_user_id} in chat {chat_id}: {e}")
-        await update.message.reply_text(f"Failed to reject user: {e}")
+        update.message.reply_text(f"Failed to reject user: {e}")
 
-async def list_pending_command_handler(update: Update, context: CallbackContext):
+def list_pending_command_handler(update: Update, context: CallbackContext):
     """
     Handle /listpending command from admins.
     List all users awaiting verification.
@@ -210,20 +210,20 @@ async def list_pending_command_handler(update: Update, context: CallbackContext)
     
     # Check if command sender is an admin
     try:
-        chat_member = await context.bot.get_chat_member(chat_id, user_id)
+        chat_member = context.bot.get_chat_member(chat_id, user_id)
         if not is_admin(chat_member):
-            await update.message.reply_text("Only admins can use this command.")
+            update.message.reply_text("Only admins can use this command.")
             return
     except TelegramError as e:
         logger.error(f"Error checking admin status for user {user_id}: {e}")
-        await update.message.reply_text("Failed to verify admin status. Please try again later.")
+        update.message.reply_text("Failed to verify admin status. Please try again later.")
         return
     
     # Get all pending users
     pending_users = verification_storage.get_all_pending_users(chat_id)
     
     if not pending_users:
-        await update.message.reply_text("No users are currently awaiting verification.")
+        update.message.reply_text("No users are currently awaiting verification.")
         return
     
     # Build message with list of pending users
@@ -251,9 +251,9 @@ async def list_pending_command_handler(update: Update, context: CallbackContext)
         message += f"• {user_display} - ID: {user_id}\n"
         message += f"  Commands: /verify {user_id} | /reject {user_id}\n\n"
     
-    await update.message.reply_text(message)
+    update.message.reply_text(message)
 
-async def help_command_handler(update: Update, context: CallbackContext):
+def help_command_handler(update: Update, context: CallbackContext):
     """
     Handle /help command to provide information about the bot.
     """
@@ -271,9 +271,9 @@ async def help_command_handler(update: Update, context: CallbackContext):
         "4. Alternatively, admins can reject users with /reject"
     )
     
-    await update.message.reply_text(help_text, parse_mode="Markdown")
+    update.message.reply_text(help_text, parse_mode="Markdown")
 
-async def error_handler(update: object, context: CallbackContext) -> None:
+def error_handler(update: object, context: CallbackContext) -> None:
     """
     Handle errors in the dispatcher.
     Log them for debugging.
