@@ -1,11 +1,25 @@
 import logging
 import os
+import sys
+import time
+import signal
 from telegram import Update, ChatPermissions
 from telegram.ext import ApplicationBuilder, CommandHandler, ChatMemberHandler, ContextTypes
 
 # Get telegram token from environment variables for security
 BOT_TOKEN = os.environ.get("TELEGRAM_TOKEN")
 ADMIN_ID = 7582664657  # Telegram ID of @UMFST_Admin
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.StreamHandler(sys.stdout),
+        logging.FileHandler('bot.log')
+    ]
+)
+logger = logging.getLogger(__name__)
 
 logging.basicConfig(level=logging.INFO)
 
