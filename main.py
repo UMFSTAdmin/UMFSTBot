@@ -144,8 +144,12 @@ async def run_bot():
         logging.error("No Telegram token provided. Bot will not start.")
         return
 
-    # Create and configure the application
-    bot_app = ApplicationBuilder().token(BOT_TOKEN).build()
+    # Create and configure the application with APScheduler disabled to avoid timezone issues
+    bot_app = (ApplicationBuilder()
+               .token(BOT_TOKEN)
+               .arbitrary_callback_data(True)
+               .job_queue(None)  # Disable job queue to avoid timezone issues
+               .build())
     
     # Add handlers
     bot_app.add_handler(ChatMemberHandler(handle_new_member, ChatMemberHandler.CHAT_MEMBER))
