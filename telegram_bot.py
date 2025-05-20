@@ -2,14 +2,12 @@ import logging
 import os
 import sys
 import time
-import signal
 import asyncio
 from aiohttp import web
 from telegram import Update, ChatMemberUpdated, ChatPermissions
 from telegram.ext import (
     ApplicationBuilder,
     CommandHandler,
-    MessageHandler,
     ChatMemberHandler,
     ContextTypes,
 )
@@ -158,31 +156,21 @@ async def start_webserver():
     await site.start()
     print(f"Web server started on port {port}")
 
-async def main_async():
-    await start_webserver()
+async def main():
+    # Set up the bot application
+    app = ApplicationBuilder().token(BOT_TOKEN).build()
 
-app = ApplicationBuilder().token(BOT_TOKEN).build()
+    # Register all command handlers
+    app.add_handler(ChatMemberHandler(handle_chat_member_update, ChatMemberHandler.CHAT_MEMBER))
+    app.add_handler(CommandHandler("start", start))
+    app.add_handler(CommandHandler("help", help_command))
+    app.add_handler(CommandHandler("rules", rules_command))
+    app.add_handler(CommandHandler("resources", resources_command))
+    app.add_handler(CommandHandler("verify", verify))
+    app.add_handler(CommandHandler("reject", reject))
 
-async def handle_new_member(update: ChatMemberUpdated, context: ContextTypes.DEFAULT_TYPE):
-    new_user = update.chat_member.new_chat_member.user
-    chat_id = update.chat_member.chat.id
-    await context.bot.send_message(
-        chat_id=chat_id,
-        text=f"Welcome, {new_user.first_name}! Please verify yourself by sending your student ID.",
-    )
-
-app.add_handler(ChatMemberHandler(handle_new_member, ChatMemberHandler.CHAT_MEMBER))
-app.add_handler(CommandHandler("start", start))
-app.add_handler(CommandHandler("help", help_command))
-app.add_handler(CommandHandler("rules", rules_command))
-app.add_handler(CommandHandler("resources", resources_command))
-app.add_handler(CommandHandler("verify", verify))
-app.add_handler(CommandHandler("reject", reject))
-
-# Run polling
-async def run_polling():
-    await app.run_polling()
+    # Run web server and bot concurrently
+    await asyncio.gather(start_webserver(), app.run_polling())
 
 if __name__ == "__main__":
-    asyncio.run(main_async())
-    asyncio.run(run_polling())
+    asyncio.run(main())
