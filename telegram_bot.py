@@ -204,4 +204,25 @@ async def main_async():
     await app.run_polling()
 
 if __name__ == "__main__":
-    asyncio.run(main_async())
+    import threading
+
+    # Start webserver for Render health check
+    def run_webserver():
+        asyncio.run(start_webserver())
+
+    threading.Thread(target=run_webserver).start()
+
+    # Start Telegram bot (uses its own asyncio loop)
+    app = ApplicationBuilder().token(BOT_TOKEN).build()
+
+    app.add_handler(ChatMemberHandler(handle_chat_member_update, ChatMemberHandler.CHAT_MEMBER))
+    app.add_handler(CommandHandler("start", start))
+    app.add_handler(CommandHandler("help", help_command))
+    app.add_handler(CommandHandler("rules", rules_command))
+    app.add_handler(CommandHandler("resources", resources_command))
+    app.add_handler(CommandHandler("verify", verify))
+    app.add_handler(CommandHandler("reject", reject))
+    app.add_handler(CommandHandler("unban", unban))
+    app.add_handler(CommandHandler("unban_id", unban_id))
+
+    app.run_polling()  # <--- let this manage the async loop
