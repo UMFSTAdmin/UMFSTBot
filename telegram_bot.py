@@ -152,6 +152,14 @@ async def main_async():
 
 	app = ApplicationBuilder().token(BOT_TOKEN).build()
 
+async def handle_new_member(update: ChatMemberUpdated, context: ContextTypes.DEFAULT_TYPE):
+	new_user = update.chat_member.new_chat_member.user
+	chat_id = update.chat_member.chat.id
+	await context.bot.send_message(
+		chat_id=chat_id,
+		text=f"Welcome, {new_user.first_name}! Please verify yourself by sending your student ID.",
+	)
+
 	app.add_handler(ChatMemberHandler(handle_new_member, ChatMemberHandler.CHAT_MEMBER))
 	app.add_handler(CommandHandler("verify", verify))
 	app.add_handler(CommandHandler("reject", reject))
