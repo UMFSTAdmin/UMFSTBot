@@ -5,14 +5,14 @@ import time
 import signal
 import asyncio
 from aiohttp import web
-from telegram import Update, ChatMemberUpdated
+from telegram import ChatMemberUpdated
 from telegram.ext import (
-	ApplicationBuilder, 
+	Application, 
 	CommandHandler, 
-	MessageHandler
+	MessageHandler,
 	ChatMemberHandler, 
 	ContextTypes,
-	Filters
+	Filters,
 )
 
 # Get telegram token from environment variables for security
