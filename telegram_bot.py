@@ -5,7 +5,7 @@ import time
 import signal
 import asyncio
 from aiohttp import web
-from telegram import ChatMemberUpdated
+from telegram import Update, ChatMemberUpdated
 from telegram.ext import (
 	Application, 
 	CommandHandler, 
