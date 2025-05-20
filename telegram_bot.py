@@ -5,8 +5,15 @@ import time
 import signal
 import asyncio
 from aiohttp import web
-from telegram import Update, ChatPermissions
-from telegram.ext import ApplicationBuilder, CommandHandler, ChatMemberHandler, ContextTypes
+from telegram import Update, ChatMemberUpdated
+from telegram.ext import (
+	ApplicationBuilder, 
+	CommandHandler, 
+	MessageHandler
+	ChatMemberHandler, 
+	ContextTypes,
+	Filters
+)
 
 # Get telegram token from environment variables for security
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
