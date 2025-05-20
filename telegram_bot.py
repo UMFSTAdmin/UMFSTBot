@@ -14,7 +14,7 @@ from telegram.ext import (
 
 # Load environment variables
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
-ADMIN_ID = 7582664657  # Replace with your actual admin ID
+ADMIN_ID = 7582664657  # Replace with your actual Telegram admin user ID
 
 # Logging setup
 logging.basicConfig(
@@ -197,6 +197,7 @@ if __name__ == "__main__":
 
     app = ApplicationBuilder().token(BOT_TOKEN).build()
 
+    # Set up handlers
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("help", help_command))
     app.add_handler(CommandHandler("rules", rules_command))
@@ -207,9 +208,9 @@ if __name__ == "__main__":
     app.add_handler(CommandHandler("unban_id", unban_id))
     app.add_handler(ChatMemberHandler(handle_chat_member_update, ChatMemberHandler.CHAT_MEMBER))
 
-    # Optional: Set bot commands for Telegram UI
-    async def set_commands():
-        await app.bot.set_my_commands([
+    # Fix: Accept one argument for post_init
+    async def set_commands(application):
+        await application.bot.set_my_commands([
             ("start", "Start the bot"),
             ("help", "Help info"),
             ("verify", "Verify a user"),
@@ -219,6 +220,7 @@ if __name__ == "__main__":
             ("rules", "Group rules"),
             ("resources", "Useful links")
         ])
+
     app.post_init = set_commands
 
     app.run_polling()
