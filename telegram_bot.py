@@ -12,7 +12,6 @@ from telegram.ext import (
 	MessageHandler,
 	ChatMemberHandler, 
 	ContextTypes,
-	Filters,
 )
 
 # Get telegram token from environment variables for security
