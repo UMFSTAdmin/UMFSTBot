@@ -7,7 +7,7 @@ from telegram import Update, ChatPermissions
 from telegram.ext import ApplicationBuilder, CommandHandler, ChatMemberHandler, ContextTypes
 
 # Get telegram token from environment variables for security
-BOT_TOKEN = os.environ.get("TELEGRAM_TOKEN")
+BOT_TOKEN = os.environ.get("BOT_TOKEN")
 ADMIN_ID = 7582664657  # Telegram ID of @UMFST_Admin
 
 # Configure logging
@@ -163,18 +163,19 @@ async def unban_id(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(f"An error occurred: {str(e)}")
 
 def main():
-    # Create and configure the application
-    app = ApplicationBuilder().token(BOT_TOKEN).build()
-    
-    # Add handlers
-    app.add_handler(ChatMemberHandler(handle_new_member, ChatMemberHandler.CHAT_MEMBER))
-    app.add_handler(CommandHandler("verify", verify))
-    app.add_handler(CommandHandler("reject", reject))
-    app.add_handler(CommandHandler("unban", unban))
-    app.add_handler(CommandHandler("unban_id", unban_id))
-    
-    # Start the bot in polling mode
-    app.run_polling()
+	try:
+		app = ApplicationBuilder().token(BOT_TOKEN).build()
+
+		app.add_handler(ChatMemberHandler(handle_new_member, ChatMemberHandler.CHAT_MEMBER))
+		app.add_handler(CommandHandler("verify", verify))
+		app.add_handler(CommandHandler("reject", reject))
+		app.add_handler(CommandHandler("unban", unban))
+		app.add_handler(CommandHandler("unban_id", unban_id))
+
+		logger.info("Bot is starting...")
+		app.run_polling()
+	except Exception as e:
+		logger.error(f"Bot failed to start: {e}")
     
 if __name__ == "__main__":
     main()
