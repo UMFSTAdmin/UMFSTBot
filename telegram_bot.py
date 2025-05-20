@@ -7,7 +7,7 @@ import asyncio
 from aiohttp import web
 from telegram import Update, ChatMemberUpdated
 from telegram.ext import (
-	Application, 
+	ApplicationBuilder, 
 	CommandHandler, 
 	MessageHandler,
 	ChatMemberHandler, 
